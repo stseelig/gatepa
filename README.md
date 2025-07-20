@@ -3,7 +3,7 @@
 ApeTag tool
 
 
-## tutorial
+## Tutorial
 
 Let us pretend that we have just ripped a CD with cd-paranoia(1),
 and now want to tag it.
@@ -53,7 +53,7 @@ A gatepa command is built like
 ```
 $ gatepa [options] [files] -- [modes]
 ```
-(the "--" is necessary)
+(The "--" is necessary.)
 
 
 A gatepa mode is used like
@@ -61,7 +61,8 @@ A gatepa mode is used like
 mode$[file-range]$[field1]$[field2][$]
 ```
 where '$' is the seperator byte used.
-(Some bytes are unallowed: '-', ',', or the PATH seperator when 'add-file'ing)
+(Some bytes are unallowed: 
+'-', ',', or the PATH seperator when 'add-file'ing.)
 
 
 ```
@@ -116,7 +117,7 @@ $ gatepa ./*.tta -- \
 The 'add' mode is used to add/replace text items to/in tags.
 ```
 add$[file-range]$key$value[$]
-``
+```
 
 
 No file has been written to, yet. In order to write the tags, we have to use
@@ -311,7 +312,7 @@ the 'extract' mode and some shell.
 (I will leave that as an exercise for the reader.)
 
 
-## history
+## History
 
 I wrote a personal program for editing apetags a couple of years ago.
 It was a decent learning experience; the program worked (mostly),
