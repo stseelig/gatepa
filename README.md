@@ -61,7 +61,7 @@ A gatepa mode is used like
 mode$[file-range]$[field1]$[field2][$]
 ```
 where '$' is the seperator byte used.
-(Some bytes are unallowed: 
+(Some bytes are unallowed:
 '-', ',', or the PATH seperator when 'add-file'ing.)
 
 
