@@ -201,7 +201,7 @@ apetag_write_tag_header(
 	struct ApeTag_TagHF header;
 	size_t err;
 
-	header = apetag_taghf_make(	/* TODO: short tag opt */
+	header = apetag_taghf_make(
 		tag_size, tag_nmemb, APEFLAG_NO_READONLY,
 		APEFLAG_IS_HEADER | APEFLAG_HAS_FOOTER | APEFLAG_HAS_HEADER
 	);

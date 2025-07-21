@@ -13,6 +13,7 @@
 #include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 #include <libs/ascii-literals.h>
 #include <libs/gstring.h>
@@ -48,6 +49,9 @@ PURE
 static int cmp_item_score_text_audio(const struct Gatepa_Tag *, uint32_t)
 /*@*/
 ;
+
+PURE
+static int get_stak_idx(const uint8_t *, size_t) /*@*/;
 
 PURE
 static int cmp_item_fbu(const struct Gatepa_Tag *, uint32_t, uint32_t) /*@*/;
@@ -185,9 +189,46 @@ cmp_item_score_text_audio(
 )
 /*@*/
 {
-	#define SCORE_TEXT_AUDIO_KEY_NUM	8u
+	const uint8_t *const key_str = GSTRING_PTR(&tag->key[idx]);
+	const size_t         key_len = (size_t) tag->key[idx].len;
+	/* * */
+	void *temp_ptr;
+	int stak_idx;
+
+	/* MAYBE: check if the item is a text file */
+
+	/* check if it is one of the special keys */
+	stak_idx = get_stak_idx(key_str, key_len);
+	if ( stak_idx >= 0 ){
+		return ITEMCMPSCORE_TEXT_AUDIO_BASE + stak_idx;
+	}
+
+	/* check for an underscore */
+	temp_ptr = memchr(key_str, (int) ASCII_USCORE, key_len);
+	if ( temp_ptr != NULL ){
+		return ITEMCMPSCORE_TEXT_USCORE;
+	}
+	else {	return ITEMCMPSCORE_TEXT; }
+}
+
+/* returns the index of the key, or -1 on error */
+PURE
+static int
+get_stak_idx(const uint8_t *const data, const size_t len)
+/*@*/
+{
+	#define STAK_TITLE	0u
+	#define STAK_ARTST	1u
+	#define STAK_CMPSR	2u
+	#define STAK_ALBUM	3u
+	#define STAK_YEAR	4u
+	#define STAK_TRACK	5u
+	#define STAK_GENRE	6u
+	#define STAK_CMMNT	7u
+	/* * */
+	#define SCORE_TEXT_AUDIO_KEY_NUM	(STAK_CMMNT + 1u)
 	/*@observer@*/
-	const uint8_t *key[SCORE_TEXT_AUDIO_KEY_NUM]     = {
+	const uint8_t *stak_key[SCORE_TEXT_AUDIO_KEY_NUM] = {
 		(const uint8_t *) u8"title",
 		(const uint8_t *) u8"artist",
 		(const uint8_t *) u8"composer",
@@ -197,43 +238,48 @@ cmp_item_score_text_audio(
 		(const uint8_t *) u8"genre",
 		(const uint8_t *) u8"comment"
 	};
-	const uint8_t  key_len[SCORE_TEXT_AUDIO_KEY_NUM] = {
-		UINT8_C(5),
-		UINT8_C(6),
-		UINT8_C(8),
-		UINT8_C(5),
-		UINT8_C(4),
-		UINT8_C(5),
-		UINT8_C(5),
-		UINT8_C(7),
+	const uint8_t  stak_key_len[SCORE_TEXT_AUDIO_KEY_NUM] = {
+		UINT8_C(5),	/* title    */
+		UINT8_C(6),	/* artist   */
+		UINT8_C(8),	/* composer */
+		UINT8_C(5),	/* album    */
+		UINT8_C(4),	/* year     */
+		UINT8_C(5),	/* track    */
+		UINT8_C(5),	/* genre    */
+		UINT8_C(7),	/* comment  */
 	};
-	/* * */
-	void *ptr;
-	int cmp;
-	unsigned int i;
+	const int8_t stak_idx_table[16u] = {
+	#define T	int8_t
+	(T) STAK_TITLE,	(T) -1,		(T) STAK_CMMNT,	(T) STAK_GENRE,
+	(T) STAK_TRACK,	(T) STAK_TRACK,	(T) -1,		(T) -1,
+	(T) STAK_CMPSR,	(T) STAK_ALBUM,	(T) -1,		(T) STAK_ARTST,
+	(T) -1,		(T) -1,		(T) STAK_YEAR,	(T) -1
+	#undef T
+	};
 
-	/* MAYBE: check if the item is a text file */
+	uint8_t hash = 0;
+	int stak_idx;
+	size_t i;
 
-	/* compare against an array of common item keys */
-	for ( i = 0; i < SCORE_TEXT_AUDIO_KEY_NUM; ++i ){
-		cmp = gstring_cmp_bstring(
-			&tag->key[idx], key[i], (size_t) key_len[i],
-			ascii_casecmp
-		);
-		if ( cmp == 0 ){
-			return ITEMCMPSCORE_TEXT_AUDIO_BASE + (int) i;
-		}
+	/* hash */
+	for ( i = 0; i < len; ++i ){
+		hash ^= ascii_tolower(data[i]);
 	}
+	hash  *= (uint8_t) i;
+	hash >>= 1u;
+	hash  &= 0xFu;
 
-	/* check for an underscore */
-	ptr = memchr(
-		GSTRING_PTR(&tag->key[idx]), (int) ASCII_USCORE,
-		tag->key[idx].len
-	);
-	if ( ptr != NULL ){
-		return ITEMCMPSCORE_TEXT_USCORE;
+	/* verify */
+	stak_idx = (int) stak_idx_table[hash];
+	if ( (stak_idx < 0)
+	    ||
+	     ((size_t) stak_key_len[stak_idx] != len)
+	    ||
+	     (memcmp(data, stak_key[stak_idx], len) != 0)
+	){
+		return -1;
 	}
-	else {	return ITEMCMPSCORE_TEXT; }
+	return stak_idx;
 }
 
 /* returns like a qsort comparison function */

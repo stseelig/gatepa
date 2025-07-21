@@ -25,7 +25,7 @@ const char *g_argv0 = "gatepa";
 /* //////////////////////////////////////////////////////////////////////// */
 
 /* MAYBE: merge all of the errors */
-/* TODO: opt errors */
+/* MAYBE: opt errors */
 
 /*@unchecked@*/ /*@observer@*/
 static const char *const f_tagcheck_strerror[TAGCHECK_NUM_ERRORS] = {

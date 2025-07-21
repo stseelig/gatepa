@@ -122,7 +122,7 @@ open_files(
 	return retval;
 }
 
-/* TODO: pass argv_idx for error printing */
+/* MAYBE: pass argv_idx for error printing */
 static int
 open_files_loop_body(
 	/*@partial@*/ struct OpenFiles *const openfiles,

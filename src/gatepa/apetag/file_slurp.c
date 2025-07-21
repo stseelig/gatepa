@@ -125,7 +125,6 @@ static enum SlurpError slurp_item_value_unknown(
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-/* TODO: enum returns */
 /* returns 0 on success */
 GATEPA enum SlurpError
 apetag_slurp_tag(
@@ -437,7 +436,7 @@ slurp_item_value_text(
 		err = (int) apetag_memitem_add_value(item, &gs);
 		if ( err != 0 ){
 			/*@-mustdefine@*/ /*@-mustmod@*/
-			return SLURP_ERR_MEMTAG;/* TODO: change/enum */
+			return SLURP_ERR_MEMTAG;
 			/*@=mustdefine@*/ /*@=mustmod@*/
 		}
 

@@ -131,7 +131,6 @@ apetag_file_tag_check_eof(
 	/* * */
 	err.z = nbufio_read(file, &tag_hf[1u], sizeof tag_hf[1u]);
 	if ( err.z != sizeof tag_hf[1u] ){
-		/* TODO: check very small (tag-only) files handling */
 		/*@-mustdefine@*/
 		return (err.z != NBUFIO_RW_ERROR
 			? TAGCHECK_ERR_READ_EOF : TAGCHECK_ERR_READ

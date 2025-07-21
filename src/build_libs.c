@@ -24,7 +24,6 @@
 #include "libs/gstring/0-0-1_mod_fini.c"
 #include "libs/gstring/0-1-0_ref_bstring.c"
 #include "libs/gstring/0-2-0_copy_bstring.c"
-#include "libs/gstring/2-0-0_cmp_bstring.c"
 #include "libs/gstring/2-0-1_cmp_gstring.c"
 
 #include "libs/gbitset/0-0_init.c"
