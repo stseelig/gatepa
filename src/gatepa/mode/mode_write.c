@@ -203,19 +203,23 @@ write_single(
 	}
 
 	if ( tag->nmemb == 0 ){
-		/* remove the old tag */
-		err.i = nbufio_truncate(fd, info->off_begin);
-		if ( err.i != 0 ){
-			/*@-mustmod@*/
-			return GATERR_IO_TRUNCATE;
-			/*@=mustmod@*/
-		}
+		if ( info->off_end != NBUFIO_OFF_ERROR ){
+			/* remove the old tag */
+			err.i = nbufio_truncate(fd, info->off_begin);
+			if ( err.i != 0 ){
+				/*@-mustmod@*/
+				return GATERR_IO_TRUNCATE;
+				/*@=mustmod@*/
+			}
 
-		*info = gatepa_fileinfo_make(
-			0, 0, info->off_begin, NBUFIO_OFF_ERROR,
-			NBUFIO_OFF_ERROR
-		);
+			*info = gatepa_fileinfo_make(
+				0, 0, info->off_begin, NBUFIO_OFF_ERROR,
+				NBUFIO_OFF_ERROR
+			);
+		}
+		/*@-mustmod@*/
 		return 0;
+		/*@=mustmod@*/
 	}
 
 	/* allocate a buffer */
@@ -237,12 +241,14 @@ write_single(
 	err.z = apetag_construct_tag(buf, (size_t) size_items, tag, type);
 	assert(err.z == (size_t) size_items);
 
-	/* remove the old tag */
-	err.i = nbufio_truncate(fd, info->off_begin);
-	if ( err.i != 0 ){
-		/*@-mustmod@*/
-		return GATERR_IO_TRUNCATE;
-		/*@=mustmod@*/
+	if ( info->off_end != NBUFIO_OFF_ERROR ){
+		/* remove the old tag */
+		err.i = nbufio_truncate(fd, info->off_begin);
+		if ( err.i != 0 ){
+			/*@-mustmod@*/
+			return GATERR_IO_TRUNCATE;
+			/*@=mustmod@*/
+		}
 	}
 
 	/* seek to the end of the file */
